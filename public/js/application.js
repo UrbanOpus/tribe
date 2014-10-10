@@ -13,6 +13,10 @@
  * scripts down below using //= filename.js notation.
  */
 
-//= require lib/jquery-2.1.1.min
-//= require lib/bootstrap.min
-//= require main
+ //= require vendor/jquery/jquery
+ //= require vendor/bootstrap/dist/js/bootstrap.min
+ //= require vendor/underscore/underscore
+ //= require vendor/backbone/backbone
+ //= require vendor/momentjs/moment
+
+ //= require main

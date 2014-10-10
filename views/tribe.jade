@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1 Tribe
+  #moodContainer.container-fluid
+    .col-md-12
+      h2 #{name}
+      img#tribe-icon(src=imgsrc)
+      h2 Category
+      span #{category}
+      h2 Summary
+      div #{summary}
+      h2 Created
+      span #{createdAt}
+      h2 Members
+      span #{members.length}

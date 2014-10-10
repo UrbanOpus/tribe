@@ -1,0 +1,50 @@
+extends layout
+
+block content
+  h1 Tribe Dashboard
+  #moodContainer.container-fluid
+    .col-md-6
+      h2 Tribe
+      table.table.table-striped.table-hover#TribeTable
+        thead
+          tr
+            th Name
+            th Category
+            th Member Count
+            th Created
+            th Delete
+        tbody#tribesBody
+    .col-md-6
+      h2 Create Tribe
+      form#createTribe(role='form')
+        .form-group
+          label(for='name') Name
+          input#tribeName.form-control(type='text', placeholder='Give a name to the Tribe')
+        .form-group
+          label(for='category') Category
+          select#category.form-control
+            option(value="Interest") Interest
+            option(value="Location") Location
+            option(value="Culture") Culture
+            option(value="Other") Other
+        .form-group
+          label(for='image') Image
+          input#imagesrc.form-control(type='text', placeholder='Enter URL of image')
+        #numAnswers 
+          .form-group
+            label(for='summary') Summary
+            textarea.form-control#tribesummary(name="summary", rows="10")
+        button#submit.btn.btn-success Add Tribe
+
+  script(type='text/template', id='tmpl-tribe-row')
+    td 
+      a.tribe-name<%= name %>
+    td <%= category %>
+    td <%= members.length %>
+    td <%= createdAt %>
+    td
+      button.close.close-mood(data-tribehash="<%= _id %>")
+        | &times;
+
+block scripts
+  != js('src/tribe')

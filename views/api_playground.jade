@@ -1,0 +1,92 @@
+extends layout
+
+block content
+  h1 API Playground
+  #moodContainer.container-fluid
+      .col-md-6
+          h2 Moods
+          .row
+            div.col-md-12
+              table.table.table-striped#moodsTable
+                thead
+                  tr
+                    th Hash
+                    th UUID
+                    th Time
+                    th value
+                    th Delete
+                tbody#moodsBody
+        .col-md-6
+          h2 Question of the Day
+          #questionsContainer.container-fluid
+            #questionStatus
+            .row
+              #questionForm.col-md-12
+                h3 Add Question
+                .form-group
+                  label(for='questionType') Question Type
+                  select.form-control#questionType(name='type')
+                    option(value='mc') Multiple Choice (non-exclusive)
+                    option(value='emc') Multiple Choice (exclusive)
+                    option(value='num') Numerical Range
+                form#mc(role='form')
+                  .form-group
+                    label(for='question') Question
+                    input#question.form-control(type='text', placeholder='What is 2+2?')
+                  #mcAnswers
+                    .form-group
+                      label(for='answer') Answer 1
+                      input#answer.form-control.answer(type='text')
+                  #numAnswers
+                    .form-group
+                      label(for='rangeMin') Minimum value
+                      input#rangeMin.form-control.answer(type='number')
+                    .form-group
+                      label(for='rangeMax') Maximum value
+                      input#rangeMax.form-control.answer(type='number')
+                  .form-group
+                    label(for='provideDate') Date to Provide
+                    input#provideDate.form-control(type='date', name='provideDate')
+                  button.btn.btn-default.add Add another answer
+                  button#submit.btn.btn-success(type='submit') Submit Question
+              .col-md-12
+                h3 All Questions
+                #questionsList
+
+  script(type='text/template', id='tmpl-mood-row')
+    td <%= _id %>
+    td <%= userID %>
+    td <%= createdAt %>
+    td <%= value %>
+    td
+      button.close.close-mood(data-moodhash='<%= _id %>')
+        | &times;
+
+  script(type='text/template', id='tmpl-question-list')
+    div
+        ul.list-group.answers#possibleAnswers
+            li.list-group-item.list-group-item-info.question
+              strong <%= content %>
+              | (
+              a.question-link(href='/api/questions/' + '<%= _id %>') <%= _id %>
+              | )
+              button.close.close-question(type='button', data-questionhash='<%= _id %>') ×
+            li.list-group-item.list-group-item-success
+              | Provide on: <%= provideDate %>
+              span.badge <%= responses.length %> total responses
+
+
+  script(type='text/template', id='tmpl-mc-answer')
+    li.list-group-item
+      span.badge <%= count %>
+      <%= text %>
+
+  script(type='text/template', id='tmpl-num-answer')
+    li.list-group-item
+      span.badge <%= count %>
+      | Range <%= min %> - <%= max %>
+
+
+
+block scripts
+  != js('src/api_playground')

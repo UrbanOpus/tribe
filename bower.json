@@ -1,0 +1,14 @@
+{
+  "name": "Tribe",
+  "dependencies": {
+    "backbone": "~1.1.0",
+    "bootstrap": "~3.1.1",
+    "font-awesome": "~4.2",
+    "jquery": "*",
+    "jquery-ui": "*",
+    "momentjs": "*",
+    "underscore": "*",
+    "ionicons": "*",
+    "bootstrap-social": "*"
+  }
+}
