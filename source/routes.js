@@ -117,20 +117,27 @@ exports = module.exports = function(app, passport) {
  */
 
   app.route('/tribes')
-     .get(tribeController.tribeHomepage);
+    .get(tribeController.tribeHomepage);
 
   app.route('/tribes/:tribeID')
-     .get(tribeController.tribePage);
+    .get(tribeController.tribePage);
      
-
   app.route('/api/tribes')
-     .get(tribeController.allTribes)
-     .post(tribeController.createTribe);
+    .get(tribeController.allTribes)
+    .post(tribeController.createTribe);
 
-   app.route('/api/tribes/:tribeID')
-       .get(tribeController.getTribe)
-       .delete(tribeController.deleteTribe);
+  app.route('/api/tribes/:tribeID')
+    .get(tribeController.getTribe)
+    .delete(tribeController.deleteTribe);
 
+  app.route('/api/jointribe/:tribeID/')
+    .post(tribeController.joinTribe);
+
+  app.route('/api/leavetribe/:tribeID/')
+    .post(tribeController.leaveTribe);
+
+  app.route('/api/tribers/:tribeID/')
+    .get(tribeController.getTribers);
 
   app.route('/api_playground')
       .get(api_demo.playground);
@@ -181,6 +188,9 @@ exports = module.exports = function(app, passport) {
       .get(questionsAPI.responses)
       .post(questionsAPI.createResponse);
 
+  app.route('/api/questions/:questionID/:tribeID/responses')
+      .get(questionsAPI.getResponsesByTribe);
+
   app.route('/api/questions/:questionID/responses/sorted')
       .get(questionsAPI.sortResponses);
 
@@ -188,17 +198,20 @@ exports = module.exports = function(app, passport) {
       .get(questionsAPI.response);
 
 
-  app.route('/api/users/:userID')
+  app.route('/api/users/:triberID')
       .get(usersAPI.getTriber)
       .put(usersAPI.changeNotificationTime)
       .delete(usersAPI.deleteTriber);
 
-  app.route('/api/users/:userID/gcm')
+  app.route('/api/users/:triberID/gcm')
       .post(usersAPI.registerDevice)
       .delete(usersAPI.unregisterDevice);
 
-  app.route('/api/users/:userID/notify')
+  app.route('/api/users/:triberID/notify')
       .delete(usersAPI.unsubscribeTriber);
+
+  app.route('/api/usertribe/:triberID/')
+    .get(usersAPI.getTribes);
 
   app.route('/api/users')
       .get(usersAPI.getAllTribers)

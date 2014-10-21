@@ -1,9 +1,10 @@
-/**
- * Created by faide on 2014-05-30.
- */
 'use strict';
 
+var _ = require('underscore');
+var async = require('async');
+
 var Question = require('../../models/Question');
+var Tribe = require('../../models/Tribe');
 
 function sortResponses(questionObj) {
     var sortedResponses = {},
@@ -196,85 +197,85 @@ exports.questionOfTheDay = function (req, res) {
 };
 
 exports.responses = function (req, res) {
-    Question.findOne({_id: req.params.questionID}, function (err, question) {
-        var responses = question.responses;
-        if (err) {
-            console.log(err);
-            return res.status(404).send('Question not found');
-        }
+  findResponse(req, function (err, question) {
+    if (err) {
+        console.log(err);
+        return res.status(404).send('Question not found');
+    }
 
-        if (req.query.timeStart) {
-            responses = responses.filter(function (response) {
-                var timeMin = new Date(req.query.timeStart).getTime(),
-                    time = new Date(response.createdAt).getTime();
+    var responses = question.responses;
 
-                return time > timeMin;
-            });
-        }
-
-        if (req.query.timeEnd) {
-            responses = responses.filter(function (response) {
-                var timeMax = new Date(req.query.timeEnd).getTime(),
-                    time = new Date(response.createdAt).getTime();
-
-                return time < timeMax;
-            });
-        }
-
-        res.status(200).send(responses);
-    });
+    res.status(200).send(responses);
+  });
 };
 
 exports.sortResponses = function (req, res) {
-    Question.findOne({_id: req.params.questionID}, function (err, question) {
-        var responses = question.responses;
+  findResponse(req, function (err, question) {
+    if (err) {
+        console.log(err);
+        return res.status(404).send('Question not found');
+    }
+
+    res.status(200).send(sortResponses(question));
+  });
+};
+
+exports.getResponsesByTribe = function (req, res) {
+  async.waterfall([
+    function(callback){
+      findResponse(req, function (err, question) {
         if (err) {
-            console.log(err);
-            return res.status(404).send('Question not found');
+          callback(err);
         }
 
-
-        if (req.query.timeStart) {
-            responses = responses.filter(function (response) {
-                var timeMin = new Date(req.query.timeStart).getTime(),
-                    time = new Date(response.createdAt).getTime();
-
-                return time > timeMin;
-            });
+        callback(null, sortResponses(question));
+      });
+    },
+    function(responses, callback){
+      Tribe.find({_id: req.params.tribeID}, function (err, tribe) {
+        if (err) {
+          callback(err);
         }
 
-        if (req.query.timeEnd) {
-            responses = responses.filter(function (response) {
-                var timeMax = new Date(req.query.timeEnd).getTime(),
-                    time = new Date(response.createdAt).getTime();
+        callback(null, tribe.members, responses);
+      })
+    },
+    function(members, responses, callback){
+      var tribeResponse = _.filter(responses, function (response) {
+        return _.contains(members, response.userID);
+      });
 
-                return time < timeMax;
-            });
-        }
+      callback(null, tribeResponse);
+    }
+  ], function (err, result) {
+    if (err) {
+        console.log(err);
+        return res.status(404).send(err);
+    }
 
-        return res.status(200).send(sortResponses(question));
-    });
+    res.status(200).send(result);        
+  });
 };
 
 exports.createResponse = function (req, res) {
-    Question.findOne({_id: req.params.questionID}, function (err, question) {
-        var response,
-            responseIndex;
-        if (err) {
-            console.log(err);
-            return res.status(404).send('Question not found');
-        }
-        response = req.body;
-        response.createdAt = Date.now();
-        responseIndex = question.responses.push(response) - 1;
-        question.save(function (err, question) {
-            if (err) {
-                console.log(err);
-                return res.status(400).send('Error');
-            }
-            res.status(200).send(question.responses[responseIndex]);
-        });
+  Question.findOne({_id: req.params.questionID}, function (err, question) {
+    var response,
+        responseIndex;
+    if (err) {
+      console.log(err);
+      return res.status(404).send('Question not found');
+    }
+    response = req.body;
+    response.createdAt = Date.now();
+    responseIndex = question.responses.push(response) - 1;
+    question.save(function (err, question) {
+    if (err) {
+        console.log(err);
+        return res.status(400).send('Error');
+      }
+      res.status(200).send(question.responses[responseIndex]);
     });
+  });
 };
 
 exports.response = function (req, res) {
@@ -294,3 +295,33 @@ exports.response = function (req, res) {
         return res.status(404).send('Response not found');
     });
 };
+
+var findResponse = function (req, callback) {
+  Question.findOne({_id: req.params.questionID}, function (err, question) {
+      var responses = question.responses;
+      if (err) {
+        callback(err);
+      }
+
+
+      if (req.query.timeStart) {
+          responses = responses.filter(function (response) {
+              var timeMin = new Date(req.query.timeStart).getTime(),
+                  time = new Date(response.createdAt).getTime();
+
+              return time > timeMin;
+          });
+      }
+
+      if (req.query.timeEnd) {
+          responses = responses.filter(function (response) {
+              var timeMax = new Date(req.query.timeEnd).getTime(),
+                  time = new Date(response.createdAt).getTime();
+
+              return time < timeMax;
+          });
+      }
+
+      callback(null, question);
+  });
+}

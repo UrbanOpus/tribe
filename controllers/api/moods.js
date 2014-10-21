@@ -1,9 +1,3 @@
-/**
- * Created by faide on 2014-06-11.
- */
-/**
- * Created by faide on 2014-06-11.
- */
 'use strict';
 
 var Mood = require('../../models/Mood');

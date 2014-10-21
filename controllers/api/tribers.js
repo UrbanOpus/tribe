@@ -5,9 +5,11 @@
 'use strict';
 
 var Triber       = require('../../models/Triber'),
+    Tribe        = require('../../models/Tribe'),
     schedule     = require('node-schedule'),
     gcm          = require('node-gcm'),
-    question_api = require('./questions');
+    question_api = require('./questions'),
+    async        = require('async');
 
 // api key
 var apiKey     = 'AIzaSyDsk0su960Fan69w1R0TXigen1RQXB6Ih8',
@@ -144,6 +146,28 @@ module.exports = {
             }
             return res.status(404).send('Triber not found');
         });
+    },    
+    getTribes: function (req, res) {
+        Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
+            if (err) {
+                console.log(err);
+                return res.status(404).send(err);
+            }
+            if (triber) {
+              async.map(triber.tribe, function (tribeID, callback) {
+                Tribe.findOne({_id: tribeID}, function (err, tribe) {
+                  tribe = JSON.parse(JSON.stringify(tribe));
+                  delete tribe.members;
+                  callback(err, tribe);
+                });
+              }, function(err, results) {
+                if (err) {
+                  return res.status(404).send(err);
+                }
+                res.status(200).send(results);
+              })
+            }
+        });
     },
     changeNotificationTime: function (req, res) {
         Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
@@ -163,7 +187,6 @@ module.exports = {
             }
         });
     },
-
     registerDevice: function (req, res) {
         Triber.update({uuid: req.params.triberID}, function (err, triber) {
             if (err) {
@@ -180,7 +203,6 @@ module.exports = {
             });
         });
     },
-
     unregisterDevice: function (req, res) {
         Triber.update({uuid: req.params.triberID}, function (err, triber) {
             if (err) {
@@ -197,7 +219,6 @@ module.exports = {
             });
         });
     },
-
     unsubscribeTriber: function (req, res) {
         Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
             if (err) {

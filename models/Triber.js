@@ -12,7 +12,7 @@ var TriberSchema = new Schema({
     uuid: String,
     notificationTime: String,
     registrationID: String, // this is required by GCM
-    tribe: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tribe' }]
+    tribe: [{ type: String, unique: true }]
 });
 
 module.exports = mongoose.model('Triber', TriberSchema);

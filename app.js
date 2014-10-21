@@ -19,6 +19,7 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var expressValidator = require('express-validator');
 var connectAssets = require('connect-assets');
+var cors = require('cors');
 
 /**
  * API keys and Passport configuration.
@@ -50,6 +51,15 @@ var week = day * 7;
  * Express configuration.
  */
 
+ var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', 'example.com');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+    next();
+}
+
+
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -76,6 +86,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+//Use only for debugging
+app.use(cors());
 app.use(function(req, res, next) {
   // Make user object available in templates.
   res.locals.user = req.user;

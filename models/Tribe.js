@@ -24,7 +24,7 @@ var TribeSchema = new Schema({
     category: {
       type: String
     }, 
-    members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Triber' }]
+    members: [{ type: String, unique: true}]
 });
 
 module.exports = mongoose.model('Tribe', TribeSchema);
