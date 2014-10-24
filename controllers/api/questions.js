@@ -232,7 +232,7 @@ exports.getResponsesByTribe = function (req, res) {
       });
     },
     function(responses, callback){
-      Tribe.find({_id: req.params.tribeID}, function (err, tribe) {
+      Tribe.findOne({_id: req.params.tribeID}, function (err, tribe) {
         if (err) {
           callback(err);
         }
@@ -241,9 +241,11 @@ exports.getResponsesByTribe = function (req, res) {
       })
     },
     function(members, responses, callback){
-      var tribeResponse = _.filter(responses, function (response) {
-        return _.contains(members, response.userID);
+      var tribeResponse = _.map(responses, function (response, key) {
+        return [key, _.filter(response, function (resp) { return _.contains(members, resp.userID);})];
       });
+
+      tribeResponse =_.object(tribeResponse);
 
       callback(null, tribeResponse);
     }
