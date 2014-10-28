@@ -18,7 +18,7 @@
 
 module.exports = {
 
-  db: process.env.MONGODB|| 'mongodb://localhost:27017/tribe',
+  db: process.env.MONGOHQ_URL|| 'mongodb://localhost:27017/tribe',
 
   sessionSecret: process.env.SESSION_SECRET || 'Your Session Secret goes here',
 
