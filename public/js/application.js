@@ -18,5 +18,6 @@
  //= require vendor/underscore/underscore
  //= require vendor/backbone/backbone
  //= require vendor/momentjs/moment
+ //= require vendor/bootstrap-datetimepicker/bootstrap-datetimepicker.min
 
  //= require main

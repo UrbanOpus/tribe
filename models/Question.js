@@ -38,13 +38,13 @@ var QuestionSchema = new Schema({
        type: Date,
        required: true
    },
-   provideDate: {
-       year:  {
-           type: Number,
-           default: 2014
-       },
-       month: Number,
-       day:   Number
+   provideOn : {
+      type: Date,
+      required: true
+   },
+   expireOn : {
+      type: Date,
+      required: true
    },
    responses: [
        {

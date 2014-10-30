@@ -2,9 +2,12 @@
 
 var _ = require('underscore');
 var async = require('async');
+var moment = require('moment');
 
 var Question = require('../../models/Question');
 var Tribe = require('../../models/Tribe');
+
+var DEFAULT_TIME_FRAME_HOURS = 2;
 
 function sortResponses(questionObj) {
     var sortedResponses = {},
@@ -39,22 +42,15 @@ exports.getQuestionOfTheDay = function(date, cb) {
     var params = {};
 
     date = date || new Date();
-    console.log('query date:', date);
     if (parseInt(date)) {
-        date = new Date(parseInt(date));
+        date = moment(parseInt(date));
 
     }
-    console.log('actual date:', date);
-    params.provideDate = {
-        year:  date.getFullYear(),
-        month: date.getMonth(),
-        day:   date.getDate()
-    };
+    
+    var end = date.clone().endOf('day');
+    var start = date.clone().startOf('day');
 
-
-    console.log('searching for question to provide on', params.provideDate);
-
-    Question.findOne(params, null, { sort: { createdAt: -1 } }, function (err, question) {
+    Question.findOne({provideOn: {$gt: start.toDate(), $lt: end.toDate()}}, null, { sort: { createdAt: -1 } }, function (err, question) {
         if (err) {
             console.log(err);
             return cb(err, null);
@@ -110,17 +106,12 @@ exports.createQuestion = function (req, res) {
         console.log(errors);
         return res.status(400).send(errors);
     }
+    
+    q.provideOn = moment(req.body.provideDate);
 
-    if (req.body.provideDate) {
-        // hacky, but it works!
-        date = new Date(req.body.provideDate + 'GMT-0700');
-        q.provideDate = {
-            year:  date.getFullYear(),
-            month: date.getMonth(),
-            day:   date.getDate()
-        };
+    var timeframe = req.body.timeframe? req.body.timeframe : DEFAULT_TIME_FRAME_HOURS;
 
-    }
+    q.expireOn = moment(req.body.provideDate).add(timeframe,'h');
 
     // Create private fields
     q.createdAt = Date.now();
@@ -175,7 +166,6 @@ exports.deleteQuestion = function (req, res) {
 };
 
 exports.questionOfTheDay = function (req, res) {
-    console.log('req.query.date:', req.query.date);
     exports.getQuestionOfTheDay(req.query.date, function (err, question) {
         if (err) {
             console.log(err);

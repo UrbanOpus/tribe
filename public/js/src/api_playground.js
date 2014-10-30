@@ -70,8 +70,13 @@
       type: '',
       possibleAnswers: '',
       createdAt: '',
-      provideDate: '',
+      provideOn: '',
       responses: []
+    },
+    parse: function (question) {
+      question.provideOn = moment(question.provideOn).format('l');
+
+      return question;
     },
     url: function() {
       return '/api/questions/' + this.id;
@@ -224,6 +229,16 @@
 
 
     resetQuestionForm();
+
+
+    $('#provideDate').datetimepicker({
+      icons: {
+          time: "fa fa-clock-o",
+          date: "fa fa-calendar",
+          up: "fa fa-arrow-up",
+          down: "fa fa-arrow-down"
+      }
+    });
   });
 
   var remove_mood = function (event) {
@@ -309,8 +324,8 @@
         answers,
         content = question[0].value,
         type    = $('select#questionType').val(),
-        provideDate = $('input#provideDate').val();
-
+        provideDate = $('#provideDate').data("DateTimePicker").getDate().format(),
+        timeframe =$('#timeframe').val();
 
     // type-specific grooming
     switch (type) {
@@ -342,7 +357,8 @@
         type: type,
         content: content,
         provideDate: provideDate,
-        possibleAnswers: answers
+        possibleAnswers: answers,
+        timeframe: timeframe
       },
       type: 'POST',
       dataType: 'json',
@@ -356,7 +372,8 @@
             class: 'alert alert-success',
             text: 'Creation successful'
         }));
-        // fetchQuestions();
+
+        app.questionView.collection.fetch();
         resetQuestionForm();
       },
       error: function (error) {

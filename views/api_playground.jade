@@ -46,7 +46,13 @@ block content
                       input#rangeMax.form-control.answer(type='number')
                   .form-group
                     label(for='provideDate') Date to Provide
-                    input#provideDate.form-control(type='date', name='provideDate')
+                      #provideDate.input-group.date
+                          input.form-control(type='text')
+                          span.input-group-addon
+                            span.fa.fa-calendar
+                  .form-group
+                    label(for='Time Frame') Time Frame (in Hours)
+                    input#timeframe.form-control(type='number', value=2)
                   button.btn.btn-default.add Add another answer
                   button#submit.btn.btn-success(type='submit') Submit Question
               .col-md-12
@@ -72,7 +78,7 @@ block content
               | )
               button.close.close-question(type='button', data-questionhash='<%= _id %>') ×
             li.list-group-item.list-group-item-success
-              | Provide on: <%= provideDate %>
+              | Provide on: <%= provideOn %>
               span.badge <%= responses.length %> total responses
 
 
