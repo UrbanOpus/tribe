@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node app.js",
     "test": "mocha",
-    "postinstall": "./node_modules/grunt-cli/bin/grunt"
+    "postinstall": "bower install && grunt"
   },
   "dependencies": {
     "async": "^0.9.0",
@@ -29,6 +29,8 @@
     "express-validator": "^2.5.0",
     "fbgraph": "^0.2.11",
     "grunt": "~0.4.5",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-clean": "~0.5.0",
     "github-api": "^0.7.0",
     "instagram-node": "^0.5.1",
     "jade": "^1.7.0",
@@ -69,8 +71,6 @@
     "chai": "^1.9.1",
     "mocha": "^1.21.4",
     "multiline": "^0.3.4",
-    "supertest": "^0.13.0",
-    "grunt-contrib-copy": "~0.5.0",
-    "grunt-contrib-clean": "~0.5.0"
+    "supertest": "^0.13.0"
   }
 }
