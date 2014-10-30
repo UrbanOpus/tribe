@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node app.js",
     "test": "mocha",
-    "postinstall": "grunt"
+    "postinstall": "./node_modules/grunt-cli/bin/grunt"
   },
   "dependencies": {
     "async": "^0.9.0",
