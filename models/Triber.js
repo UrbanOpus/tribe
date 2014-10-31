@@ -24,7 +24,11 @@ var TriberSchema = new Schema({
               '$75,000 to $99,999', '$100,000 to $149,999', '$150,000 to $199,999', '$200,000 or more'],
        required: true
     },
-    tribe: [{ type: String, unique: true }]
+    tribe: [{ type: String, unique: true }],
+    tribeEnabled: {
+      type: Boolean,
+      default: false
+    }
 });
 
 module.exports = mongoose.model('Triber', TriberSchema);

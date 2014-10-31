@@ -159,6 +159,13 @@ exports = module.exports = function(app, passport) {
       .post(moodsAPI.createMood)
       .get(moodsAPI.moods);
 
+  app.route('/api/moods/users/:userID')
+      .post(moodsAPI.createMood)
+      .get(moodsAPI.moods);
+
+  app.route('/api/moods/tribes/:tribeID')
+      .get(moodsAPI.moodsByTribe);
+
   app.param(function(name, fn){
       if (fn instanceof RegExp) {
           return function(req, res, next, val){

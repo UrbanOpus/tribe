@@ -1,6 +1,9 @@
 'use strict';
 
+var _ = require('underscore');
 var Mood = require('../../models/Mood');
+var Tribe = require('../../models/Tribe');
+var async = require('async');
 
 /**
  *  For future: Some authentication should be run on :userID before it's used as a query.
@@ -106,6 +109,69 @@ exports.moods = function (req, res) {
         res.status(200).send(moods);
     });
 };
+
+exports.moodsByTribe = function (req, res) {
+  async.waterfall([
+    function(callback){
+      var m,
+          params = {},
+          sortObject = {
+              'createdAt': -1 // default to this
+          };
+
+      if (req.query.timeStart) {
+          params.createdAt = params.createdAt || {};
+          params.createdAt.$gt = req.query.timeStart;
+      }
+      if (req.query.timeEnd) {
+          params.createdAt = params.createdAt || {};
+          params.createdAt.$lt = req.query.timeEnd;
+      }
+
+      m = Mood.find(params);
+
+      if (req.query.orderBy && req.query.orderDir) {
+          sortObject[req.query.orderBy] = (isNaN(req.query.orderDir)) ? ((req.query.orderDir === 'desc') ? -1 : 1) : req.query.orderDir;
+      }
+      m.sort(sortObject);
+
+      if (req.query.limit) {
+          m.limit(req.query.limit);
+      }
+
+      m.exec(function (err, moods) {
+          if (err) {
+              return callback(err);
+          }
+          callback(null, moods);
+      });
+    },
+    function(moods, callback){
+      Tribe.findOne({_id: req.params.tribeID}, function (err, tribe) {
+        if (err) {
+          callback(err);
+        }
+
+        callback(null, tribe.members, moods);
+      })
+    },
+    function(members, moods, callback){
+
+      var result = _.filter(moods, function (mood)  {
+        return _.contains(members, mood.userID);
+      });
+      callback(null, result);
+    }
+  ], function (err, result) {
+    if (err) {
+        console.log(err);
+        return res.status(400).send(err);
+    }
+
+    res.status(200).send(result);
+  });
+};
+
 
 exports.createMood = function (req, res) {
     var mood = new Mood(req.body),
