@@ -9,7 +9,8 @@ var Triber       = require('../../models/Triber'),
     schedule     = require('node-schedule'),
     gcm          = require('node-gcm'),
     question_api = require('./questions'),
-    async        = require('async');
+    async        = require('async'),
+    _            = require('underscore');
 
 // api key
 var apiKey     = 'AIzaSyDsk0su960Fan69w1R0TXigen1RQXB6Ih8',
@@ -121,14 +122,29 @@ module.exports = {
     },
     deleteTriber: function (req, res) {
         // cancel the scheduled GCM send
-        Triber.remove({uuid: req.query.triberID}, function (err) {
-            if (err) {
-                console.log(err);
-                return res.status(404).send(err);
+        Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
+            if (triber) {
+              async.map(triber.tribe, function (tribeID, callback) {
+                Tribe.findOne({_id: tribeID}, function (err, tribe) {
+                  tribe.members = _.without(tribe.members, _.findWhere(tribe.members, triber.uuid));
+                  tribe.save();
+                  callback(err, tribe);
+                });
+              }, function(err, results) {
+                if (err) {
+                  return res.status(404).send(err);
+                }
+                triber.remove(function (err) {
+                    if (err) {
+                        console.log(err);
+                        return res.status(404).send(err);
+                    }
+                    return res.status(200).send('Triber removed');
+                });
+              })
             }
-            return res.status(200).send('Triber removed');
-
         });
+
     },
     getTriber: function (req, res) {
         Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
