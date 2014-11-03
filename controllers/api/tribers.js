@@ -187,6 +187,24 @@ module.exports = {
             }
         });
     },
+    toggleTribe: function (req, res) {
+        Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
+            if (err) {
+                console.log(err);
+                return res.status(404).send(err);
+            }
+            if (triber) {
+                triber.tribeEnabled = !triber.tribeEnabled;
+                triber.save(function (err, triber) {
+                    if (err) {
+                        console.log(err);
+                        return res.status(400).send(err);
+                    }
+                    return res.status(200).send(triber);
+                });
+            }
+        });
+    },
     registerDevice: function (req, res) {
         Triber.update({uuid: req.params.triberID}, function (err, triber) {
             if (err) {

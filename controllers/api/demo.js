@@ -7,3 +7,10 @@ exports.playground = function (req, res) {
       title: 'playground'
     });
 };
+
+
+exports.allTribers = function (req, res) {
+    res.render('triber_management', {
+      title: 'Manage Triber'
+    })
+};

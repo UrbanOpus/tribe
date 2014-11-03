@@ -121,6 +121,9 @@ exports = module.exports = function(app, passport) {
 
   app.route('/tribes/:tribeID')
     .get(tribeController.tribePage);
+
+  app.route('/tribers')
+    .get(api_demo.allTribers);
      
   app.route('/api/tribes')
     .get(tribeController.allTribes)
@@ -209,6 +212,9 @@ exports = module.exports = function(app, passport) {
       .get(usersAPI.getTriber)
       .put(usersAPI.changeNotificationTime)
       .delete(usersAPI.deleteTriber);
+
+  app.route('/api/toggletribe/:triberID')
+      .put(usersAPI.toggleTribe)
 
   app.route('/api/users/:triberID/gcm')
       .post(usersAPI.registerDevice)

@@ -1,0 +1,33 @@
+extends layout
+
+block content
+  h1 API Playground
+  #triberContainer.container-fluid
+      h2 Tribers
+      .row
+        div.col-md-12
+          table.table.table-striped#triberTable
+            thead
+              tr
+                th UUID
+                th Income
+                th Gender
+                th Tribe Enabled
+                th Toggle Tribe
+                th Delete Triber
+            tbody#triberBody
+
+  script(type='text/template', id='tmpl-tribe-row')
+    td <%= uuid %>
+    td <%= income %>
+    td <%= gender %>
+    td <%= tribeEnabled %>
+    td
+      button.toggle-tribe(data-uuid="<%= _id %>")
+        | Toggle Tribe
+    td
+      button.close.close-triber(data-uuid="<%= _id %>")
+        | &times;
+
+block scripts
+  != js('src/managetriber')
