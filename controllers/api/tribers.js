@@ -121,19 +121,14 @@ module.exports = {
     },
     deleteTriber: function (req, res) {
         // cancel the scheduled GCM send
-        if (notification_timers[req.params.triberID]) {
-            notification_timers[req.params.triberID].cancel();
-            Triber.remove({uuid: req.query.triberID}, function (err) {
-                if (err) {
-                    console.log(err);
-                    return res.status(404).send(err);
-                }
-                return res.status(200).send('Triber removed');
+        Triber.remove({uuid: req.query.triberID}, function (err) {
+            if (err) {
+                console.log(err);
+                return res.status(404).send(err);
+            }
+            return res.status(200).send('Triber removed');
 
-            });
-        } else {
-            return res.status(404).send('Triber not subscribed');
-        }
+        });
     },
     getTriber: function (req, res) {
         Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
