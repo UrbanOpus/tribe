@@ -9,7 +9,8 @@ var Triber       = require('../../models/Triber'),
     schedule     = require('node-schedule'),
     gcm          = require('node-gcm'),
     question_api = require('./questions'),
-    async        = require('async');
+    async        = require('async'),
+    _            = require('underscore');
 
 // api key
 var apiKey     = 'AIzaSyDsk0su960Fan69w1R0TXigen1RQXB6Ih8',
@@ -121,19 +122,29 @@ module.exports = {
     },
     deleteTriber: function (req, res) {
         // cancel the scheduled GCM send
-        if (notification_timers[req.params.triberID]) {
-            notification_timers[req.params.triberID].cancel();
-            Triber.remove({uuid: req.query.triberID}, function (err) {
+        Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
+            if (triber) {
+              async.map(triber.tribe, function (tribeID, callback) {
+                Tribe.findOne({_id: tribeID}, function (err, tribe) {
+                  tribe.members = _.without(tribe.members, _.findWhere(tribe.members, triber.uuid));
+                  tribe.save();
+                  callback(err, tribe);
+                });
+              }, function(err, results) {
                 if (err) {
-                    console.log(err);
-                    return res.status(404).send(err);
+                  return res.status(404).send(err);
                 }
-                return res.status(200).send('Triber removed');
+                triber.remove(function (err) {
+                    if (err) {
+                        console.log(err);
+                        return res.status(404).send(err);
+                    }
+                    return res.status(200).send('Triber removed');
+                });
+              })
+            }
+        });
 
-            });
-        } else {
-            return res.status(404).send('Triber not subscribed');
-        }
     },
     getTriber: function (req, res) {
         Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
