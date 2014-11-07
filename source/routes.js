@@ -216,6 +216,9 @@ exports = module.exports = function(app, passport) {
   app.route('/api/toggletribe/:triberID')
       .put(usersAPI.toggleTribe)
 
+  app.route('/api/changenickname')
+      .post(usersAPI.changeTriberNickname)
+
   app.route('/api/users/:triberID/gcm')
       .post(usersAPI.registerDevice)
       .delete(usersAPI.unregisterDevice);

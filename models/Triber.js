@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
  */
 var TriberSchema = new Schema({
     uuid: String,
+    nickname: String,
     notificationTime: String,
     registrationID: String, // this is required by GCM
     birthyear: Number,
