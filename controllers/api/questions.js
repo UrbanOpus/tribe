@@ -41,7 +41,7 @@ function sortResponses(questionObj) {
 exports.getQuestionOfTheDay = function(date, cb) {
     var params = {};
 
-    date = date || new Date();
+    date = date || new moment();
     if (parseInt(date)) {
         date = moment(parseInt(date));
 
