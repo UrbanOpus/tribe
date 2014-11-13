@@ -50,6 +50,9 @@ exports.getQuestionOfTheDay = function(date, cb) {
     var end = date.clone().endOf('day');
     var start = date.clone().startOf('day');
 
+    console.log(end.toDate());
+    console.log(start.toDate());
+
     Question.findOne({provideOn: {$gt: start.toDate(), $lt: end.toDate()}}, null, { sort: { createdAt: -1 } }, function (err, question) {
         if (err) {
             console.log(err);
