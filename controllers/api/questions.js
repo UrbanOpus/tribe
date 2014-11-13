@@ -48,16 +48,14 @@ exports.getQuestionOfTheDay = function(date, cb) {
     }
     
     var end = date.clone().endOf('day');
+    var start = date.clone().startOf('day');
 
-    console.log(date.toDate());
-
-    Question.findOne({provideOn: {$gt: date.toDate(), $lt: end.toDate()}}, null, { sort: { createdAt: -1 } }, function (err, question) {
+    Question.findOne({provideOn: {$gt: start.toDate(), $lt: end.toDate()}}, null, { sort: { createdAt: -1 } }, function (err, question) {
         if (err) {
             console.log(err);
             return cb(err, null);
         }
 
-        console.log("what");
         // return null if a question was not found for `date`
         return cb(null, question);
     });
