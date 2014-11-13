@@ -57,8 +57,7 @@ exports.getQuestionOfTheDay = function(date, cb) {
             return cb(err, null);
         }
 
-        console.log(question.provideOn);
-
+        console.log("what");
         // return null if a question was not found for `date`
         return cb(null, question);
     });
