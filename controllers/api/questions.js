@@ -46,6 +46,8 @@ exports.getQuestionOfTheDay = function(date, cb) {
         date = moment(parseInt(date));
 
     }
+
+    console.log("date", date.toDate());
     
     var end = date.clone().endOf('day');
     var start = date.clone().startOf('day');
