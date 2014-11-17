@@ -13,7 +13,7 @@ var Triber       = require('../../models/Triber'),
     _            = require('underscore');
 
 // api key
-var apiKey     = 'AIzaSyDsk0su960Fan69w1R0TXigen1RQXB6Ih8',
+var apiKey     = 'AIzaSyC10X3AgXHbuA4yn3hMNijqU889ZBncA24',
     gcm_sender = new gcm.Sender(apiKey);
 
 var notification_timers = {};

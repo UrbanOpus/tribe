@@ -126,8 +126,8 @@
           _.each(question.attributes.responses, function (response) {
             if (question.attributes.type === 'mc') {
               _.each(response.value, function (val, index) {
-                if (val) {                  
-                  response_counts[index] = (response_counts[answer_id] + 1) || 1
+                if (val) {
+                  response_counts[index] = (response_counts[index] + 1) || 1
                 }
               })
             } else {

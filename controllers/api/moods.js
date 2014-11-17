@@ -4,6 +4,7 @@ var _ = require('underscore');
 var Mood = require('../../models/Mood');
 var Tribe = require('../../models/Tribe');
 var async = require('async');
+var moment = require('moment');
 
 /**
  *  For future: Some authentication should be run on :userID before it's used as a query.
