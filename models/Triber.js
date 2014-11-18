@@ -29,6 +29,10 @@ var TriberSchema = new Schema({
     tribeEnabled: {
       type: Boolean,
       default: false
+    },
+    refreshed : {
+      type: Boolean,
+      default: false
     }
 });
 

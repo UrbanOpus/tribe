@@ -10,10 +10,11 @@ var Triber       = require('../../models/Triber'),
     gcm          = require('node-gcm'),
     question_api = require('./questions'),
     async        = require('async'),
-    _            = require('underscore');
+    _            = require('underscore'),
+    moment = require('moment');
 
 // api key
-var apiKey     = 'AIzaSyC10X3AgXHbuA4yn3hMNijqU889ZBncA24',
+var apiKey     = 'AIzaSyDKJoxjaycJeN_lP8v5x-jtgmOqkAHWDkU',
     gcm_sender = new gcm.Sender(apiKey);
 
 var notification_timers = {};
@@ -35,14 +36,14 @@ function parseTime(timeString) {
     return time_obj;
 }
 function scheduleGCM(time, triber) {
-    return;
+
     var rule_time = parseTime(time);
     console.log(time);
     console.log(parseTime(time));
 
     // enable a notification timer for a new triber
     var rule = new schedule.RecurrenceRule();
-    rule.hour = rule_time.hour + 7; // test this out
+    rule.hour = rule_time.hour; // test this out
     rule.minute = rule_time.minute;
 
     console.log(rule);
@@ -55,13 +56,13 @@ function scheduleGCM(time, triber) {
         Triber.findOne({_id: triber._id}, function (err, current_triber) {
             console.log('..found triber');
             var isAnswered;
-            if (current_triber && current_triber.registrationID && current_triber.notificationTime) {
-                question_api.getQuestionOfTheDay(new Date(), function (err, question) {
+            if (current_triber && current_triber.registrationID) {
+                question_api.getQuestionOfTheDay(new moment(), function (err, question) {
                     if (err) {
                         console.log(err);
                     }
                     if (question) {
-                    console.log('..found question');
+                    console.log('..onNotificationGCMound question');
 
                         //make sure the question hasn't been answered already
                         console.log('..searching responses...');
@@ -235,12 +236,13 @@ module.exports = {
         });
     },
     registerDevice: function (req, res) {
-        Triber.update({uuid: req.params.triberID}, function (err, triber) {
+        Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
             if (err) {
                 console.log(err);
                 return res.status(404).send(err);
             }
             triber.registrationID = req.body.registrationID;
+            triber.refreshed = true;
             triber.save(function (err, triber) {
                 if (err) {
                     console.log(err);
@@ -251,7 +253,7 @@ module.exports = {
         });
     },
     unregisterDevice: function (req, res) {
-        Triber.update({uuid: req.params.triberID}, function (err, triber) {
+        Triber.findOne({uuid: req.params.triberID}, function (err, triber) {
             if (err) {
                 console.log(err);
                 return res.status(404).send(err);
@@ -320,12 +322,10 @@ module.exports = {
 
             console.log('Rescheduling triber notifications after restart');
 
-            for (i = 0; i < l; i += 1) {
-                if (tribers[i].notificationTime) {
-                    scheduleGCM(tribers[i].notificationTime, tribers[i]);
-                }
-            }
-
+            _.each(tribers, function(triber) {
+              scheduleGCM("10:15", triber);
+            });
+            
             console.log('Done rescheduling');
 
         });
