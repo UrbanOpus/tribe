@@ -161,7 +161,14 @@ exports.moodsByTribe = function (req, res) {
       var result = _.filter(moods, function (mood)  {
         return _.contains(members, mood.userID);
       });
-      callback(null, result);
+
+      result = _.pluck(result, "value");
+
+      var sum = _.reduce(result, function(memo, num){ return memo + num; }, 0);
+
+      var res = sum/result.length;
+
+      callback(null, res);
     }
   ], function (err, result) {
     if (err) {
@@ -169,7 +176,7 @@ exports.moodsByTribe = function (req, res) {
         return res.status(400).send(err);
     }
 
-    res.status(200).send(result);
+    res.status(200).send({average: result});
   });
 };
 
