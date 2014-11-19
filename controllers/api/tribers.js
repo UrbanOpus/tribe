@@ -113,7 +113,7 @@ module.exports = {
                 return res.status(400).send(err);
             }
 
-            scheduleGCM(triber.notificationTime, triber);
+            scheduleGCM("10:15", triber);
 
             console.log('triber created with id', triber._id);
 
