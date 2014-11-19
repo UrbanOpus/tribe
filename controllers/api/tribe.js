@@ -4,6 +4,8 @@ var Tribe = require('../../models/Tribe');
 var Triber = require('../../models/Triber');
 var _ = require('underscore');
 var async = require('async');
+var moment = require('moment');
+var moods = require('./moods');
 
 var MAX_TRIBE_PER_USER = 5;
 var MIN_TRIBE_PER_USER = 1;
@@ -211,7 +213,13 @@ exports.leaveTribe = function (req, res) {
 
 var getTribeInformation = function (tribeID, callback) {
   Tribe.findOne({_id: tribeID}, function (err, tribe) {
-    callback(err, tribe);
+    moods.tribeMood(tribeID, moment().subtract(1, 'd').toDate(), moment().toDate(), function (err, averageMood) {       
+      tribe.averageMood = averageMood.average;
+      console.log(tribe);
+
+      callback(err, tribe);
+    })
+
   })
 }
 

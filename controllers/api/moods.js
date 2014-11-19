@@ -112,74 +112,14 @@ exports.moods = function (req, res) {
 };
 
 exports.moodsByTribe = function (req, res) {
-  async.waterfall([
-    function(callback){
-      var m,
-          params = {},
-          sortObject = {
-              'createdAt': -1 // default to this
-          };
-
-      if (req.query.timeStart) {
-          params.createdAt = params.createdAt || {};
-          params.createdAt.$gt = req.query.timeStart;
-      }
-      if (req.query.timeEnd) {
-          params.createdAt = params.createdAt || {};
-          params.createdAt.$lt = req.query.timeEnd;
-      }
-
-      m = Mood.find(params);
-
-      if (req.query.orderBy && req.query.orderDir) {
-          sortObject[req.query.orderBy] = (isNaN(req.query.orderDir)) ? ((req.query.orderDir === 'desc') ? -1 : 1) : req.query.orderDir;
-      }
-      m.sort(sortObject);
-
-      if (req.query.limit) {
-          m.limit(req.query.limit);
-      }
-
-      m.exec(function (err, moods) {
-          if (err) {
-              return callback(err);
-          }
-          callback(null, moods);
-      });
-    },
-    function(moods, callback){
-      Tribe.findOne({_id: req.params.tribeID}, function (err, tribe) {
-        if (err) {
-          callback(err);
-        }
-
-        callback(null, tribe.members, moods);
-      })
-    },
-    function(members, moods, callback){
-
-      var result = _.filter(moods, function (mood)  {
-        return _.contains(members, mood.userID);
-      });
-
-      result = _.pluck(result, "value");
-
-      var sum = _.reduce(result, function(memo, num){ return memo + num; }, 0);
-
-      var res = sum/result.length;
-
-      callback(null, res);
-    }
-  ], function (err, result) {
+  averageTribeMood(req.params.tribeID, req.query.timeStart, req.query.timeEnd, function (err, data) {
     if (err) {
         console.log(err);
         return res.status(400).send(err);
     }
-
-    res.status(200).send({average: result});
+    return res.status(200).send(data);
   });
 };
-
 
 exports.createMood = function (req, res) {
     var mood = new Mood(req.body),
@@ -201,3 +141,75 @@ exports.createMood = function (req, res) {
         res.status(200).send(mood);
     });
 };
+
+exports.tribeMood = function (tribeID, timeStart, timeEnd, done) {
+  averageTribeMood(tribeID, timeStart, timeEnd, done);
+}
+
+var averageTribeMood = function (tribeID, timeStart, timeEnd, done) {
+  async.waterfall([
+    function(callback){
+      var m,
+          params = {},
+          sortObject = {
+              'createdAt': -1 // default to this
+          };
+
+      if (timeStart) {
+          params.createdAt = params.createdAt || {};
+          params.createdAt.$gt = timeStart;
+      }
+      if (timeEnd) {
+          params.createdAt = params.createdAt || {};
+          params.createdAt.$lt = timeEnd;
+      }
+
+      m = Mood.find(params);
+
+      m.sort(sortObject);
+
+      m.exec(function (err, moods) {
+          if (err) {
+              return callback(err);
+          }
+          callback(null, moods);
+      });
+    },
+    function(moods, callback){
+      Tribe.findOne({_id: tribeID}, function (err, tribe) {
+        if (err) {
+          callback(err);
+        }
+
+        callback(null, tribe.members, moods);
+      })
+    },
+    function(members, moods, callback){
+
+      if (result.length) {
+        var result = _.filter(moods, function (mood)  {
+          return _.contains(members, mood.userID);
+        });
+
+        result = _.pluck(result, "value");
+
+        var sum = _.reduce(result, function(memo, num){ return memo + num; }, 0);
+
+        var res = sum/result.length;
+
+        callback(null, res);
+      } else {
+        callback(null, 0);
+      }
+
+
+
+    }
+  ], function (err, result) {
+    if (err) {
+        done(err)
+    }
+
+    done(null, {average: result});
+  });
+}
