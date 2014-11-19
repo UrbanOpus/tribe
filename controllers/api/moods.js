@@ -207,7 +207,7 @@ var averageTribeMood = function (tribeID, timeStart, timeEnd, done) {
     }
   ], function (err, result) {
     if (err) {
-        done(err)
+        done(err);
     }
 
     done(null, {average: result});
