@@ -51,7 +51,7 @@ exports.allTribes = function (req, res) {
         if (err) {
           console.log(err);
           averageMood = {
-            average = 0;
+            average: 0
           }
         }
         var t = JSON.parse(JSON.stringify(tribe));
@@ -234,7 +234,7 @@ var getTribeInformation = function (tribeID, callback) {
       if (err) {
         console.log(err);
         averageMood = {
-          average = 0;
+          average: 0
         }
       }
       var t = JSON.parse(JSON.stringify(tribe));
