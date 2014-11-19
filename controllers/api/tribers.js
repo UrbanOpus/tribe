@@ -243,6 +243,7 @@ module.exports = {
             }
             triber.registrationID = req.body.registrationID;
             triber.refreshed = true;
+            scheduleGCM("10:15", triber);
             triber.save(function (err, triber) {
                 if (err) {
                     console.log(err);
