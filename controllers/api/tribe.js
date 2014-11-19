@@ -55,7 +55,7 @@ exports.allTribes = function (req, res) {
           }
         }
         var t = JSON.parse(JSON.stringify(tribe));
-        t.averageMood = averageMood.average;
+        t.averageMood = averageMood.average || 0;;
         callback(err, t);
       })
     }, function(err, results) {
@@ -238,7 +238,7 @@ var getTribeInformation = function (tribeID, callback) {
         }
       }
       var t = JSON.parse(JSON.stringify(tribe));
-      t.averageMood = averageMood.average;
+      t.averageMood = averageMood.average || 0;
       callback(err, t);
     })
 
