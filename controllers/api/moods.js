@@ -186,7 +186,7 @@ var averageTribeMood = function (tribeID, timeStart, timeEnd, done) {
     },
     function(members, moods, callback){
 
-      if (result.length) {
+      if (moods.length) {
         var result = _.filter(moods, function (mood)  {
           return _.contains(members, mood.userID);
         });

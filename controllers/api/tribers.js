@@ -11,7 +11,8 @@ var Triber       = require('../../models/Triber'),
     question_api = require('./questions'),
     async        = require('async'),
     _            = require('underscore'),
-    moment = require('moment');
+    moment       = require('moment'),
+    moods        = require('./moods');
 
 // api key
 var apiKey     = 'AIzaSyDKJoxjaycJeN_lP8v5x-jtgmOqkAHWDkU',
@@ -168,9 +169,12 @@ module.exports = {
             if (triber) {
               async.map(triber.tribe, function (tribeID, callback) {
                 Tribe.findOne({_id: tribeID}, function (err, tribe) {
-                  tribe = JSON.parse(JSON.stringify(tribe));
-                  delete tribe.members;
-                  callback(err, tribe);
+                  moods.tribeMood(tribeID, moment().subtract(1, 'd').toDate(), moment().toDate(), function (err, averageMood) {       
+                    var t = JSON.parse(JSON.stringify(tribe));
+                    t.averageMood = averageMood.average;
+                    delete tribe.member
+                    callback(err, t);
+                  });
                 });
               }, function(err, results) {
                 if (err) {

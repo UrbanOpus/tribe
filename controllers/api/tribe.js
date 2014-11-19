@@ -46,7 +46,19 @@ exports.allTribes = function (req, res) {
       return res.status(404).send('Tribe not found');
     }
 
-    res.json(tribes);
+    async.map(tribes, function (tribe, callback) {
+      moods.tribeMood(tribe._id, moment().subtract(1, 'd').toDate(), moment().toDate(), function (err, averageMood) {
+        tribe.averageMood = averageMood.average;
+        var t = JSON.parse(JSON.stringify(tribe));
+        t.averageMood = averageMood.average;
+        callback(err, t);
+      })
+    }, function(err, results) {
+      if (err) {
+        return res.status(404).send('Tribe not found');
+      }
+      res.json(results);
+    })
   })
 }
 
@@ -213,11 +225,11 @@ exports.leaveTribe = function (req, res) {
 
 var getTribeInformation = function (tribeID, callback) {
   Tribe.findOne({_id: tribeID}, function (err, tribe) {
-    moods.tribeMood(tribeID, moment().subtract(1, 'd').toDate(), moment().toDate(), function (err, averageMood) {       
+    moods.tribeMood(tribeID, moment().subtract(1, 'd').toDate(), moment().toDate(), function (err, averageMood) {
       tribe.averageMood = averageMood.average;
-      console.log(tribe);
-
-      callback(err, tribe);
+      var t = JSON.parse(JSON.stringify(tribe));
+      t.averageMood = averageMood.average;
+      callback(err, t);
     })
 
   })
