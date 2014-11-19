@@ -48,7 +48,6 @@ exports.allTribes = function (req, res) {
 
     async.map(tribes, function (tribe, callback) {
       moods.tribeMood(tribe._id, moment().subtract(1, 'd').toDate(), moment().toDate(), function (err, averageMood) {
-        tribe.averageMood = averageMood.average;
         var t = JSON.parse(JSON.stringify(tribe));
         t.averageMood = averageMood.average;
         callback(err, t);
@@ -226,7 +225,6 @@ exports.leaveTribe = function (req, res) {
 var getTribeInformation = function (tribeID, callback) {
   Tribe.findOne({_id: tribeID}, function (err, tribe) {
     moods.tribeMood(tribeID, moment().subtract(1, 'd').toDate(), moment().toDate(), function (err, averageMood) {
-      tribe.averageMood = averageMood.average;
       var t = JSON.parse(JSON.stringify(tribe));
       t.averageMood = averageMood.average;
       callback(err, t);
