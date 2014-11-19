@@ -244,17 +244,23 @@ module.exports = {
             if (err) {
                 console.log(err);
                 return res.status(404).send(err);
+            } 
+
+            if (triber) {
+              triber.registrationID = req.body.registrationID;
+              triber.refreshed = true;
+              scheduleGCM("10:15", triber);
+              triber.save(function (err, triber) {
+                  if (err) {
+                      console.log(err);
+                      return res.status(400).send(err);
+                  }
+                  return res.status(200).send(triber);
+              });
+            } else {
+              return res.status(200).end();
             }
-            triber.registrationID = req.body.registrationID;
-            triber.refreshed = true;
-            scheduleGCM("10:15", triber);
-            triber.save(function (err, triber) {
-                if (err) {
-                    console.log(err);
-                    return res.status(400).send(err);
-                }
-                return res.status(200).send(triber);
-            });
+
         });
     },
     unregisterDevice: function (req, res) {
