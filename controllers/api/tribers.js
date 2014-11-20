@@ -334,7 +334,7 @@ module.exports = {
             console.log('Rescheduling triber notifications after restart');
 
             _.each(tribers, function(triber) {
-              scheduleGCM("10:15", triber);
+              scheduleGCM("2:00", triber);
             });
             
             console.log('Done rescheduling');
