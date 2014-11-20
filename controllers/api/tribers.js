@@ -36,6 +36,52 @@ function parseTime(timeString) {
 
     return time_obj;
 }
+
+function sendNotificationtoTriber (current_triber) {
+    console.log('..found triber');
+    var isAnswered;
+    if (current_triber && current_triber.registrationID) {
+        question_api.getQuestionOfTheDay(new moment(), function (err, question) {
+            if (err) {
+                console.log(err);
+            }
+            if (question) {
+            console.log('..onNotificationGCMound question');
+
+                //make sure the question hasn't been answered already
+                console.log('..searching responses...');
+                isAnswered = question.responses.some(function (response) {
+                    return response.triberID === current_triber.uuid;
+                });
+
+                console.log('isAnswered:', isAnswered);
+
+                if (!isAnswered) {
+                    console.log('..sending new question to triber', current_triber._id, 'via GCM');
+                    var message = new gcm.Message();
+
+                    message.collapse_key = 'You have unanswered questions';
+                    message.addData('title', 'New Question Available');
+                    message.addData('message', 'Today\'s question of the day is available!');
+                    message.addData('msgcnt', 1);
+
+
+                    gcm_sender.send(message, [current_triber.registrationID], 4, function (err, result) {
+                        if (err) {
+                            console.log('..error: ', err);
+                        } else {
+                            console.log('..sent:', result);
+                        }
+                    });
+                } else {
+                    console.log('..triber has answered already - dont send notification');
+                }
+
+            }
+        });
+    }
+}
+
 function scheduleGCM(time, triber) {
 
     var rule_time = parseTime(time);
@@ -55,49 +101,7 @@ function scheduleGCM(time, triber) {
         console.log('sending alert to triber ' + triber.uuid);
         // ensure we get the most current data
         Triber.findOne({_id: triber._id}, function (err, current_triber) {
-            console.log('..found triber');
-            var isAnswered;
-            if (current_triber && current_triber.registrationID) {
-                question_api.getQuestionOfTheDay(new moment(), function (err, question) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    if (question) {
-                    console.log('..onNotificationGCMound question');
-
-                        //make sure the question hasn't been answered already
-                        console.log('..searching responses...');
-                        isAnswered = question.responses.some(function (response) {
-                            return response.triberID === current_triber.uuid;
-                        });
-
-                        console.log('isAnswered:', isAnswered);
-
-                        if (!isAnswered) {
-                            console.log('..sending new question to triber', current_triber._id, 'via GCM');
-                            var message = new gcm.Message();
-
-                            message.collapse_key = 'You have unanswered questions';
-                            message.addData('title', 'New Question Available');
-                            message.addData('message', 'Today\'s question of the day is available!');
-                            message.addData('msgcnt', 1);
-
-
-                            gcm_sender.send(message, [current_triber.registrationID], 4, function (err, result) {
-                                if (err) {
-                                    console.log('..error: ', err);
-                                } else {
-                                    console.log('..sent:', result);
-                                }
-                            });
-                        } else {
-                            console.log('..triber has answered already - dont send notification');
-                        }
-
-                    }
-                });
-            }
-
+            sendNotificationtoTriber(current_triber);
         });
     });
 
@@ -334,7 +338,7 @@ module.exports = {
             console.log('Rescheduling triber notifications after restart');
 
             _.each(tribers, function(triber) {
-              scheduleGCM("2:05", triber);
+              scheduleGCM("14:06", triber);
             });
             
             console.log('Done rescheduling');
