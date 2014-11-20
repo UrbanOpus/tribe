@@ -147,69 +147,74 @@ exports.tribeMood = function (tribeID, timeStart, timeEnd, done) {
 }
 
 var averageTribeMood = function (tribeID, timeStart, timeEnd, done) {
-  async.waterfall([
-    function(callback){
-      var m,
-          params = {},
-          sortObject = {
-              'createdAt': -1 // default to this
-          };
+  if (tribeID !== 'global') {
+    async.waterfall([
+      function(callback){
+        var m,
+            params = {},
+            sortObject = {
+                'createdAt': -1 // default to this
+            };
 
-      if (timeStart) {
-          params.createdAt = params.createdAt || {};
-          params.createdAt.$gt = timeStart;
-      }
-      if (timeEnd) {
-          params.createdAt = params.createdAt || {};
-          params.createdAt.$lt = timeEnd;
-      }
-
-      m = Mood.find(params);
-
-      m.sort(sortObject);
-
-      m.exec(function (err, moods) {
-          if (err) {
-              return callback(err);
-          }
-          callback(null, moods);
-      });
-    },
-    function(moods, callback){
-      Tribe.findOne({_id: tribeID}, function (err, tribe) {
-        if (err) {
-          callback(err);
+        if (timeStart) {
+            params.createdAt = params.createdAt || {};
+            params.createdAt.$gt = timeStart;
+        }
+        if (timeEnd) {
+            params.createdAt = params.createdAt || {};
+            params.createdAt.$lt = timeEnd;
         }
 
-        callback(null, tribe.members, moods);
-      })
-    },
-    function(members, moods, callback){
+        m = Mood.find(params);
 
-      if (moods.length) {
-        var result = _.filter(moods, function (mood)  {
-          return _.contains(members, mood.userID);
+        m.sort(sortObject);
+
+        m.exec(function (err, moods) {
+            if (err) {
+                return callback(err);
+            }
+            callback(null, moods);
         });
+      },
+      function(moods, callback){
+        Tribe.findOne({_id: tribeID}, function (err, tribe) {
+          if (err) {
+            callback(err);
+          }
 
-        result = _.pluck(result, "value");
+          callback(null, tribe.members, moods);
+        })
+      },
+      function(members, moods, callback){
 
-        var sum = _.reduce(result, function(memo, num){ return memo + num; }, 0);
+        if (moods.length) {
+          var result = _.filter(moods, function (mood)  {
+            return _.contains(members, mood.userID);
+          });
 
-        var res = sum/result.length;
+          result = _.pluck(result, "value");
 
-        callback(null, res);
-      } else {
-        callback(null, 0);
+          var sum = _.reduce(result, function(memo, num){ return memo + num; }, 0);
+
+          var res = sum/result.length;
+
+          callback(null, res);
+        } else {
+          callback(null, 0);
+        }
+
+
+
+      }
+    ], function (err, result) {
+      if (err) {
+          done(err);
       }
 
+      done(null, {average: result});
+    });
+  } else {
+    done(null, {average: 0});
+  }
 
-
-    }
-  ], function (err, result) {
-    if (err) {
-        done(err);
-    }
-
-    done(null, {average: result});
-  });
 }
