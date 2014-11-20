@@ -196,7 +196,7 @@ var averageTribeMood = function (tribeID, timeStart, timeEnd, done) {
 
           var sum = _.reduce(result, function(memo, num){ return memo + num; }, 0);
 
-          var res = sum/result.length;
+          var res = Math.round(sum/result.length);
 
           callback(null, res);
         } else {
