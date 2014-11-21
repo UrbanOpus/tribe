@@ -234,4 +234,7 @@ exports = module.exports = function(app, passport) {
       .post(usersAPI.createTriber)
       .delete(usersAPI.wipeTribers);
 
+  app.route('/api/users/sendReminder')
+      .get(usersAPI.sendReminder);
+
 }

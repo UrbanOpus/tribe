@@ -325,6 +325,24 @@ module.exports = {
             return res.status(200).send('done');
         });
     },
+    sendReminder: function (req, res) {
+        Triber.find({}, function (err, tribers) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            console.log('Rescheduling triber notifications after restart');
+
+            _.each(tribers, function(triber) {
+              sendNotificationtoTriber(triber);
+            });
+
+            console.log('Done rescheduling');
+
+            return res.status(200).send('done');
+
+        });
+    },
     //bootstrap startup
     onStart: function () {
         // re-schedule notifications
@@ -338,7 +356,7 @@ module.exports = {
             console.log('Rescheduling triber notifications after restart');
 
             _.each(tribers, function(triber) {
-              scheduleGCM("14:09", triber);
+              scheduleGCM("10:15", triber);
             });
             
             console.log('Done rescheduling');
