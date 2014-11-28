@@ -36,6 +36,7 @@
       $(this.el).html('');
       var frag = document.createDocumentFragment();
       _.each(this.collection.models, function(triber) {
+        triber.attributes.url = "/triber/" + triber.attributes.uuid;
         var view = new app.TriberRowView({ model: triber });
         frag.appendChild(view.render().el);
       });
@@ -48,6 +49,7 @@
     template: _.template( $('#tmpl-tribe-row').html() ),
     render: function() {
       this.$el.html(this.template( this.model.attributes ));
+      this.$el.find('.triber-link').attr("href", this.model.attributes.url);
       this.$el.find('.close-triber').attr("data-uuid", this.model.attributes.uuid);
       this.$el.find('.close-triber').click(remove_triber);
       this.$el.find('.toggle-tribe').attr("data-uuid", this.model.attributes.uuid);

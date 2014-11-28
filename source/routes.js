@@ -124,6 +124,9 @@ exports = module.exports = function(app, passport) {
 
   app.route('/tribers')
     .get(api_demo.allTribers);
+
+  app.route('/triber/:triberID')
+    .get(api_demo.tribers);
      
   app.route('/api/tribes')
     .get(tribeController.allTribes)

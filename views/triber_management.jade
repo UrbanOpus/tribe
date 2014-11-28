@@ -10,17 +10,18 @@ block content
             thead
               tr
                 th UUID
-                th Income
                 th Gender
+                th Nickname
                 th Tribe Enabled
                 th Toggle Tribe
                 th Delete Triber
             tbody#triberBody
 
   script(type='text/template', id='tmpl-tribe-row')
-    td <%= uuid %>
-    td <%= income %>
+    td
+      a.triber-link(href="<%= url %>") <%= uuid %>
     td <%= gender %>
+    td <%= nickname %>
     td <%= tribeEnabled %>
     td
       button.toggle-tribe(data-uuid="<%= _id %>")

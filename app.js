@@ -103,7 +103,7 @@ app.use(function(req, res, next) {
   next();
 });
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: week }));
-
+app.locals.moment = require('moment');
 require('./source/routes')(app, passport);
 
 /**

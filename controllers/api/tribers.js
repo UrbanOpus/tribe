@@ -161,7 +161,6 @@ module.exports = {
             if (triber) {
                 return res.status(200).send(triber);
             }
-            return res.status(404).send('Triber not found');
         });
     },    
     getTribes: function (req, res) {

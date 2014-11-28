@@ -317,3 +317,9 @@ var findResponse = function (req, callback) {
       callback(null, question);
   });
 }
+
+exports.getResponseByTriber = function (uuid) {
+  Question.find({}, function (err, questions) {
+    console.log(questions);
+  });
+};
