@@ -29,12 +29,13 @@ cd myproject
 # Install NPM dependencies
 npm install
 
-npm install -g bower
+# Install NPM global dependencies
+npm install -g bower grunt-cli
 
-npm install -g grunt-cli
-
+# Install front end packages
 bower install
 
+# Use grunt to copy front end files
 grunt
 
 node app.js
